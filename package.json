@@ -1,0 +1,23 @@
+{
+  "name": "leonidas",
+  "version": "0.0.1",
+  "description": "Leonidas is a caching proxy for SNMP traffic.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Ben Bradley",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^1.26.1",
+    "debug": "^2.6.6",
+    "lru-cache": "^4.0.2",
+    "redis": "^2.7.1",
+    "snmp-native": "^1.1.0",
+    "tail": "^1.2.1"
+  },
+  "devDependencies": {
+    "mocha": "^3.3.0",
+    "should": "^11.2.1"
+  }
+}

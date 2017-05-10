@@ -1,0 +1,35 @@
+{
+  "iptables": {
+    "table": "nat",
+    "chain": "PREROUTING",
+    "prefix": "LEONIDAS"
+  },
+  "watcher": {
+    "file": "/var/log/kern.log",
+    "filter": "LEONIDAS",
+    "matcher": "SRC=(.+?) DST=(.+?) "
+  },
+  "proxy": {
+    "protocol": "udp4"
+  },
+  "poller": {
+    "port": 161
+  },
+  "cache": {
+    "lru": {
+      "maxAge": 10000,
+      "note": "maxAge is measuredin ms"
+    },
+    "redis": {
+      "EX": 10,
+      "note": "EX is measured in seconds"
+    }
+  },
+  "devices": {
+    "channel": "device",
+    "redis": {}
+  },
+  "device": {
+    "handler": "proxy"
+  }
+}
