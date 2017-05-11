@@ -3,6 +3,7 @@
 require('should');
 const { Watcher } = require('../lib/watcher');
 const { writeFile } = require('fs');
+const debug = require('debug')(`leonidas/test/watcher`);
 
 const watcherOptions = {
   file: `${__dirname}/data/tmp.log`,

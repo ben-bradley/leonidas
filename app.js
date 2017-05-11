@@ -5,14 +5,12 @@ This is the core app. It binds together all of the components in lib/ and
 makes them work together. State is tracked here.
  */
 
-const debug = require('debug')(`app`);
+const debug = require('debug')(`leonidas/app`);
 const redis = require('redis');
 
-const { LRUCache, RedisCache } = require('./lib/cache');
-const { Devices, Device } = require('./lib/devices');
-const { iptables } = require('./lib/iptables');
-const { Poller } = require('./lib/poller');
-const { Proxy } = require('./lib/proxy');
+const { Devices } = require('./lib/devices');
+const { Device } = require('./lib/device');
+const iptables = require('./lib/iptables');
 const { Watcher } = require('./lib/watcher');
 
 /*
@@ -22,35 +20,62 @@ const { Watcher } = require('./lib/watcher');
  */
 
 const app = {
-  state: {},
+  state: { devices: {} },
   watcher: new Watcher(),
-  devices: new Devices(),
-  lruCache: new LRUCache(),
-  redisCache: new RedisCache()
+  devices: new Devices()
 }
 
-const init = () => {
+const start = () => {
   return Promise.resolve()
-  // devices.create(new Device({ ip: `192.168.20.2` }))
-    .then(() => devices.read())
-    .then((devices) => Promise.all(devices.map((device) => createDevice(device))))
-    .then((devices) => app.state.devices = devices)
-    .then(() => {
-      app.state.devices.on(`created`, (device) => createDevice(device));
-      app.state.devices.on(`updated`, (device) => updateDevice(device));
-      app.state.devices.on(`deleted`, (device) => deleteDevice(device));
+
+    // flush the iptables
+    .then(() => iptables.flush())
+
+    // set up the devices
+    .then(() => app.devices.read())
+    .then((deviceList) => {
+      for (let d of deviceList)
+        createDevice(d);
+
+      app.devices.on(`created`, (device) => createDevice(device));
+      app.devices.on(`updated`, (device) => updateDevice(device));
+      app.devices.on(`deleted`, (key) => deleteDevice(key));
+
+      return app.devices.start();
     })
-    .catch((err) => console.log(err));
+
+    // set up the watcher
+    .then(() => {
+      app.watcher.on(`ip`, (ip) => {
+        const device = new Device({ ip });
+
+        app.devices.create(device.toJSON());
+      });
+
+      return app.watcher.start();
+    });
 };
 
-const createDevice = (device) => new Promise((resolve, reject) => {
-  if (device.handler === `proxy`) {
-    console.log(`start proxy for ${device.stringify()}`);
-  }
-  else if (device.handler === `passthrough`) {
-    console.log(`start a passthrough for ${device.stringify()}`);
-  }
-  return resolve()
-});
+const createDevice = (d) => {
+  const device = app.state.devices[d.key] = new Device(d);
 
-init();
+  return device.start();
+};
+
+const deleteDevice = (key) => {
+  const device = app.state.devices[key];
+
+  if (device) {
+    return device.stop()
+      .then(() => app.state.devices[key] = null);
+  }
+
+  return Promise.resolve();
+}
+
+const updateDevice = (d) => {
+  return deleteDevice(d.key)
+    .then(() => createDevice(d))
+};
+
+start();

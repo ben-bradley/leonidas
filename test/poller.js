@@ -4,6 +4,7 @@ require('should');
 const { Poller } = require('../lib/poller');
 const { parse, encode } = require('snmp-native');
 const dgram = require('dgram');
+const debug = require('debug')(`leonidas/test/poller`);
 
 const request = require('./data/request');
 describe(`Poller`, () => {

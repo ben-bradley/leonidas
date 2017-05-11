@@ -2,8 +2,8 @@
 
 require('should');
 const {
-  createProxy,
-  createPassthrough,
+  proxy,
+  passthrough,
   read,
   delAll,
   delOne,
@@ -11,6 +11,7 @@ const {
   startLogging,
   stopLogging
 } = require('../lib/iptables');
+const debug = require('debug')(`leonidas/test/iptables`);
 
 const ip = `192.168.200.3`;
 const loopback = `10.0.2.15`;
@@ -55,13 +56,13 @@ describe(`iptables`, () => {
         .then((lines) => shouldBeEmpty(lines)))
   });
 
-  describe(`createProxy`, () => {
+  describe(`proxy`, () => {
     beforeEach(() => flush());
     afterEach(() => flush());
 
     it(`should create a proxy rule`, () =>
       Promise.resolve()
-        .then(() => createProxy(ip, loopback, port))
+        .then(() => proxy(ip, loopback, port))
         .then(() => read())
         .then((lines) => {
           (lines.length).should.eql(4);
@@ -69,13 +70,13 @@ describe(`iptables`, () => {
         }));
   });
 
-  describe(`createPassthrough`, () => {
+  describe(`passthrough`, () => {
     beforeEach(() => flush());
     afterEach(() => flush());
 
     it(`should create a passthrough rule`, () =>
       Promise.resolve()
-        .then(() => createPassthrough(ip))
+        .then(() => passthrough(ip))
         .then(() => read())
         .then((lines) => {
           (lines.length).should.eql(4);
@@ -90,7 +91,7 @@ describe(`iptables`, () => {
     it(`should delete a specific rule`, () =>
       Promise.resolve()
         .then(() => startLogging())
-        .then(() => createProxy(ip, loopback, port))
+        .then(() => proxy(ip, loopback, port))
         .then(() => read()).then((lines) => (lines.length).should.eql(5))
         .then(() => delAll(ip))
         .then(() => read()).then((lines) => (lines.length).should.eql(4)));
