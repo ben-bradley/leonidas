@@ -13,7 +13,7 @@
     "debug": "^2.6.6",
     "lru-cache": "^4.0.2",
     "redis": "^2.7.1",
-    "snmp-native": "^1.1.0",
+    "snmp-native": "git+https://github.com/calmh/node-snmp-native",
     "tail": "^1.2.1"
   },
   "devDependencies": {

@@ -15,21 +15,20 @@
   "poller": {
     "port": 161
   },
-  "cache": {
-    "lru": {
-      "maxAge": 10000,
-      "note": "maxAge is measuredin ms"
-    },
-    "redis": {
-      "EX": 10,
-      "note": "EX is measured in seconds"
-    }
-  },
   "devices": {
     "channel": "device",
     "redis": {}
   },
   "device": {
-    "handler": "proxy"
+    "handler": "proxy",
+    "loopback": "10.0.2.15",
+    "lru": {
+      "maxAge": 30000,
+      "notes": [ "maxAge is measuredin ms" ]
+    },
+    "redis": {
+      "EX": 30,
+      "notes": [ "EX is measured in seconds" ]
+    }
   }
 }
