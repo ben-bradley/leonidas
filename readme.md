@@ -28,6 +28,7 @@ Leonidas can also be configured to passthrough polls to specific devices without
 ### Polls
 
 Leonidas handles an SNMP poll as diagramed below:
+
 ![Poll Handler Flowchart](https://raw.githubusercontent.com/ben-bradley/leonidas/master/docs/poll-handler-flowchart.png "Poll Handler Flowchart")
 
 Data polled from a device is stored in the distributed and in-memory caches for a configurable period. The default is 30 seconds.
