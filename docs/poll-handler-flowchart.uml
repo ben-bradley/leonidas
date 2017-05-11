@@ -1,0 +1,18 @@
+@startuml
+(*) --> "Poll received"
+--> "Check in-memory cache"
+--> if "value found" then
+  -->[yes] "Respond to poll"
+  --> (*)
+else
+  -right->[no] "Check distributed cache"
+  --> if "value found" then
+    -->[yes] "Update in-memory cache"
+    --> "Respond to poll"
+  else
+    -right->[no] "Poll device"
+    --> "Update distributed cache"
+    --> "Update in-memory cache"
+  endif
+endif
+@enduml

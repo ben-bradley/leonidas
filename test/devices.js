@@ -2,6 +2,7 @@
 
 require('should');
 const redis = require('redis');
+const debug = require('debug')(`leonidas/test/devices`);
 
 const { Devices } = require('../lib/devices');
 const device = require('./data/device');
