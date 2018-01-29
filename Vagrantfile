@@ -32,7 +32,6 @@ ping -c 1 192.168.20.2
 SCRIPT
 
 $pollerStartup = <<SCRIPT
-route
 route del default
 route add default gateway 192.168.10.2
 ping -c 1 192.168.10.2
@@ -41,7 +40,6 @@ apt-get install -y snmp
 SCRIPT
 
 $serverStartup = <<SCRIPT
-route
 route del default
 route add default gateway 192.168.20.2
 ping -c 1 192.168.20.2
