@@ -27,20 +27,24 @@ update-rc.d redis-server defaults
 /etc/init.d/redis-server start
 #
 # ping the endpoints to activate the network
-ping 192.168.10.2
-ping 192.168.20.2
+ping -c 1 192.168.10.2
+ping -c 1 192.168.20.2
 SCRIPT
 
 $pollerStartup = <<SCRIPT
+route
 route del default
-route add default gateway 192.168.10.1
+route add default gateway 192.168.10.2
+ping -c 1 192.168.10.2
 apt-get update
 apt-get install -y snmp
 SCRIPT
 
 $serverStartup = <<SCRIPT
+route
 route del default
-route add default gateway 192.168.20.1
+route add default gateway 192.168.20.2
+ping -c 1 192.168.20.2
 apt-get update
 apt-get install -y snmpd
 mv /etc/snmp/snmpd.conf /etc/snmp/snmpd.orig
@@ -52,26 +56,26 @@ SCRIPT
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/trusty64"
 
-  config.vm.define "poller" do |poller|
-    poller.vm.network "private_network", ip: "192.168.10.2"
-    poller.vm.hostname = "poller"
-    poller.vm.provision "shell", inline: $pollerStartup
+  config.vm.define "router" do |router|
+    router.vm.network "private_network", type: "dhcp", use_dhcp_assigned_default_route: true
+    # router.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)"
+    router.vm.network "private_network", ip: "192.168.10.2"
+    router.vm.network "private_network", ip: "192.168.20.2"
+    # router.vm.network "forwarded_port", guest: 3000, host: 4000
+    router.vm.hostname = "router"
+    router.vm.provision "shell", inline: $routerStartup
   end
 
   config.vm.define "server" do |server|
-    server.vm.network "private_network", ip: "192.168.20.2"
+    server.vm.network "private_network", ip: "192.168.20.3"
     server.vm.hostname = "server"
     server.vm.provision "shell", inline: $serverStartup
   end
 
-  config.vm.define "router" do |router|
-    router.vm.network "private_network", type: "dhcp", use_dhcp_assigned_default_route: true
-    # router.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)"
-    router.vm.network "private_network", ip: "192.168.10.1"
-    router.vm.network "private_network", ip: "192.168.20.1"
-    # router.vm.network "forwarded_port", guest: 3000, host: 4000
-    router.vm.hostname = "router"
-    router.vm.provision "shell", inline: $routerStartup
+  config.vm.define "poller" do |poller|
+    poller.vm.network "private_network", ip: "192.168.10.3"
+    poller.vm.hostname = "poller"
+    poller.vm.provision "shell", inline: $pollerStartup
   end
 
 end
