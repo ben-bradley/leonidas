@@ -61,19 +61,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     router.vm.network "private_network", ip: "192.168.20.2"
     # router.vm.network "forwarded_port", guest: 3000, host: 4000
     router.vm.hostname = "router"
-    router.vm.provision "shell", inline: $routerStartup
+    router.vm.provision "shell", inline: $routerStartup, run: "always"
   end
 
   config.vm.define "server" do |server|
     server.vm.network "private_network", ip: "192.168.20.3"
     server.vm.hostname = "server"
-    server.vm.provision "shell", inline: $serverStartup
+    server.vm.provision "shell", inline: $serverStartup, run: "always"
   end
 
   config.vm.define "poller" do |poller|
     poller.vm.network "private_network", ip: "192.168.10.3"
     poller.vm.hostname = "poller"
-    poller.vm.provision "shell", inline: $pollerStartup
+    poller.vm.provision "shell", inline: $pollerStartup, run: "always"
   end
 
 end
