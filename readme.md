@@ -58,5 +58,8 @@ node app.js
 ```bash
 # terminal 2
 vagrant ssh poller
-snmpget -v2c -c public 192.168.20.2 1.3.6.1.2.1.1.1.0 -r 0
+snmpget -v2c -c public 192.168.20.3 1.3.6.1.2.1.1.3.0 -r 0
 ```
+
+Running the snmpget command multiple times should see the Timeticks
+cached for 30 seconds.
